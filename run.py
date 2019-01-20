@@ -1,6 +1,7 @@
 from src.board import Board
 
-b = Board(available_letters=['T', 'S', 'O', 'W', 'U', 'I', 'R'])
+b = Board(available_letters=['U',  'I', 'R', 'B', 'I', 'O'], \
+          word_set=set(open("wordlist.txt", "r+").read().split('\n')))
 b.add_word("VIP", (5,4))
 b.add_word("PEHS", (5,6), horizontal=False)
 b.add_word("YEAH", (7,3))
@@ -45,28 +46,68 @@ import random
 
 HORIZONTAL = 0
 
-def is_ok_direction(current, next, horizontal=True):
+
+def is_ok_direction(board, current, next, horizontal=True):
+    dx = 0
+    dy = 0
+    delta = next[1] - current[1]
     if horizontal:
-        return next[0] == current[0] and abs(next[1] - current[1]) == 1
-    return next[1] == current[1] and abs(next[0] - current[0]) == 1
+        dx = -1
+        if next[1] > current[1]:
+            dx = 1
+    else:
+        delta = next[0] - current[0]
+        dy = -1
+        if next[0] > current[0]:
+            dy = 1
+    valid = True
+    for i in range(0, abs(delta)):
+        if board.grid[current[0] + dy * i][current[1] + dx * i] == " ":
+            valid = False
+    if horizontal:
+        return next[0] == current[0] and valid
+    return next[1] == current[1] and valid
 
 def find_best_word(board):
     letter_length = random.randint(1, len(board.available_letters))
-    tile = random.choice(b.get_valid_placement_tiles())
+    valid_tiles = board.get_valid_placement_tiles()
+    if valid_tiles is None or len(valid_tiles) == 0:
+        return False
+
+    tile = random.choice(valid_tiles)
     direction = random.randint(0, 1)
     letters = random.sample(board.available_letters, letter_length)
     letter_index = 0
-    print("Choosing ", letter_length, "letters is horizontal : ", direction==HORIZONTAL)
+    tiles = []
+    word = ""
+
     while letter_index < len(letters):
         if tile:
             board.grid[tile[0]][tile[1]] = letters[letter_index]
-            print("Placed %s" % letters[letter_index], tile)
-            row_valid_tiles = [tt for tt in b.get_valid_placement_tiles() if is_ok_direction(tile, tt, horizontal=direction==HORIZONTAL)]
+            word += letters[letter_index]
+            tiles.append(tile)
+            row_valid_tiles = [tt for tt in board.get_valid_placement_tiles() if \
+                               is_ok_direction(board, tile, tt, horizontal=direction==HORIZONTAL)]
         if len(row_valid_tiles) > 0:
             tile = random.choice(row_valid_tiles)
             letter_index += 1
         else:
             break
 
+    for tile in tiles:
+        if not board.valid_word(tile):
+            return False
 
-find_best_word(b)
+    return word
+
+seen_boards = set()
+
+for _ in range(0, 100000):
+    prevgrid = b.get_grid()
+    word = find_best_word(b)
+    if word:
+        hash = b.hash()
+        if hash not in seen_boards:
+            seen_boards.add(hash)
+            print(b, hash, word)
+    b.set_grid(prevgrid)

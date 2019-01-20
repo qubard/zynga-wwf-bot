@@ -1,11 +1,15 @@
+from hashlib import md5
+from copy import deepcopy
+
 EMPTY_TILE = " "
 
 
 class Board:
-    def __init__(self, available_letters):
+    def __init__(self, available_letters, word_set=set()):
         self.modifiers = {};
         self.grid =[[EMPTY_TILE for _ in range(11)] for _ in range(11)]
         self.available_letters = available_letters
+        self.word_set = word_set
         self.letter_values = {
             'A': 1,
             'G': 3,
@@ -36,6 +40,12 @@ class Board:
             '*': 0
         }
         self._assign_modifiers()
+
+    def get_grid(self):
+        return deepcopy(self.grid)
+
+    def set_grid(self, grid):
+        self.grid = grid
 
     def _assign_modifiers(self):
         self.modifiers[(0, 0)] = "TL"
@@ -86,14 +96,24 @@ class Board:
     def has_anyone_moved(self):
         return self.grid[5][5] != EMPTY_TILE
 
+    def words_at(self, place):
+        return self.word_at_horizontal(place), self.word_at_vertical(place)
+
     def add_word(self, word, place, horizontal=True):
         dx = 1 if horizontal else 0
         dy = 1 if not horizontal else 0
         for i in range(0, len(word)):
             self.grid[place[0] + i * dy][place[1] + i * dx] = word[i]
 
-    def words_at(self, place):
-        return self.word_at_horizontal(place), self.word_at_vertical(place)
+    def valid_word(self, place):
+        hword = self.word_at_horizontal(place)
+        vword = self.word_at_vertical(place)
+        return ((hword and len(hword) == 1) or hword in self.word_set) and ((vword and len(vword) == 1) or vword in self.word_set)
+
+    def hash(self):
+        m = md5()
+        m.update(repr(self).encode('utf-8'))
+        return m.hexdigest()
 
     def word_at_horizontal(self, place):
         word = ""
@@ -114,9 +134,6 @@ class Board:
             if self.grid[place[0]][i] == EMPTY_TILE:
                 end_index = i
                 break
-
-        if start_index == end_index or end_index - start_index <= 1:
-            return None
 
         for i in range(start_index, end_index):
             word += self.grid[place[0]][i]

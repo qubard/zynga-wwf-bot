@@ -11,3 +11,7 @@ using a temporary board state:
 		- Repeat
 
 this algorithm runs in polynomial time
+
+Actually we might have to update valid squares after placing a letter (at most 3 adjacent to the word)
+	- but then it could go into weird directions
+	- unless we enforce it goes into the current direction it's going down by

@@ -38,3 +38,5 @@ print(b.words_at((7,6)))
 ('SELFS', 'PEHS')
 ('YEAH', 'PEHS')
 """
+
+print(b.get_valid_placement_tiles())

@@ -157,6 +157,17 @@ class Board:
             s += str(line) + "\n"
         return s
 
+    def get_valid_placement_tiles(self):
+        valid_tiles = []
+        for y in range(0, len(self.grid)):
+            for x in range(0, len(self.grid[y])):
+                if self.grid[y][x] == EMPTY_TILE and \
+                        (self.grid[min(y + 1, len(self.grid) - 1)][x] != EMPTY_TILE or self.grid[y][min(x + 1, len(self.grid[y]) - 1)] != EMPTY_TILE \
+                         or self.grid[max(0, y - 1)][x] != EMPTY_TILE or self.grid[y][max(0, x - 1)] != EMPTY_TILE):
+                    valid_tiles.append((y, x))
+        return valid_tiles
+
+
     def generate_valid_word_spots(self):
         for y in range(0, len(self.grid)):
             for x in range(0, len(self.grid[y])):

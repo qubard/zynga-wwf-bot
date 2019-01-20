@@ -168,16 +168,3 @@ class Board:
         return valid_tiles
 
 
-    def generate_valid_word_spots(self):
-        for y in range(0, len(self.grid)):
-            for x in range(0, len(self.grid[y])):
-                # go down the grid
-                foundWord = False
-                # (start, end, length)
-                for i in range(0, len(self.available_letters)):
-                    if self.grid[y][x] != EMPTY_TILE and not foundWord:
-                        foundWord = True
-                    elif foundWord and self.grid[y][x] != " ":
-                        pass
-
-

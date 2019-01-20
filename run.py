@@ -106,7 +106,7 @@ for _ in range(0, 100000):
     prevgrid = b.get_grid()
     word = find_best_word(b)
     if word:
-        hash = b.hash()
+        hash = b.hash
         if hash not in seen_boards:
             seen_boards.add(hash)
             print(b, hash, word)

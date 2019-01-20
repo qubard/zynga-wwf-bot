@@ -110,6 +110,7 @@ class Board:
         vword = self.word_at_vertical(place)
         return ((hword and len(hword) == 1) or hword in self.word_set) and ((vword and len(vword) == 1) or vword in self.word_set)
 
+    @property
     def hash(self):
         m = md5()
         m.update(repr(self).encode('utf-8'))

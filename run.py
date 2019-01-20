@@ -1,6 +1,6 @@
 from src.board import Board
 
-b = Board(available_letters=['U',  'I', 'R', 'B', 'I', 'O'], \
+b = Board(available_letters=['U',  'I', 'R', 'B', 'I', 'O', '*'], \
           word_set=set(open("wordlist.txt", "r+").read().split('\n')))
 b.add_word("VIP", (5,4))
 b.add_word("PEHS", (5,6), horizontal=False)
@@ -83,8 +83,7 @@ def find_best_word(board):
 
     while letter_index < len(letters):
         if tile:
-            board.grid[tile[0]][tile[1]] = letters[letter_index]
-            word += letters[letter_index]
+            word += board.place_letter(tile, letters[letter_index])
             tiles.append(tile)
             row_valid_tiles = [tt for tt in board.get_valid_placement_tiles() if \
                                is_ok_direction(board, tile, tt, horizontal=direction==HORIZONTAL)]
@@ -94,20 +93,26 @@ def find_best_word(board):
         else:
             break
 
+    modifier = False
     for tile in tiles:
         if not board.valid_word(tile):
             return False
 
-    return word
+        if tile in board.modifiers:
+            modifier = True
+
+    return word, modifier
 
 seen_boards = set()
 
-for _ in range(0, 100000):
+for _ in range(0, 300000):
     prevgrid = b.get_grid()
-    word = find_best_word(b)
-    if word:
+    w = find_best_word(b)
+    if w:
+        word = w[0]
+        modifier = w[1]
         hash = b.hash
         if hash not in seen_boards:
             seen_boards.add(hash)
-            print(b, hash, word)
+            print(b, hash, word, modifier)
     b.set_grid(prevgrid)

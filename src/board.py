@@ -1,5 +1,6 @@
 from hashlib import md5
 from copy import deepcopy
+from random import choice
 
 EMPTY_TILE = " "
 
@@ -140,6 +141,14 @@ class Board:
             word += self.grid[place[0]][i]
 
         return word
+
+    def place_letter(self, tile, letter):
+        if letter == "*":
+            letter = choice(
+                ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                 'U', 'V', 'W', 'X', 'Y', 'Z'])
+        self.grid[tile[0]][tile[1]] = letter
+        return letter
 
     def word_at_vertical(self, place):
         word = ""

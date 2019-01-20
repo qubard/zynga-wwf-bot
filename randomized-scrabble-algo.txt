@@ -1,0 +1,13 @@
+in O(n) time find all the valid squares for words (only needs to be done once)
+
+Randomized algorithm for solving scrabble:
+
+using a temporary board state:	
+- randomly choose a valid square, randomly choose some i up to len(available_letters), choose a direction (up or down, left or right) randomly, and choose i letters
+		- place them in the direction that was chosen
+		- evaluate the new word from the (start) position to the (end) position's value
+			- check if it's valid using a dictionary, and if the new words it makes are valid
+		- keep track of the word if it increased the current max score (invalid words are 0), if not ignore it
+		- Repeat
+
+this algorithm runs in polynomial time

@@ -103,9 +103,10 @@ def find_best_word(board):
 
     return word, modifier
 
+
 seen_boards = set()
 
-for _ in range(0, 300000):
+for _ in range(0, 5999999):
     prevgrid = b.get_grid()
     w = find_best_word(b)
     if w:
